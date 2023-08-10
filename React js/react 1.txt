@@ -1,0 +1,43 @@
+import React,{useState} from 'react';
+
+function Slides({slides}) {
+  const [currentSlideIndex,setCurrentSlideIndex]=useState(0);
+
+  const next=()=>{
+    if(currentSlideIndex<slides.length-1){
+      setCurrentSlideIndex(currentSlideIndex+1);
+    }
+  }
+  const prev=()=>{
+    if(currentSlideIndex>0){
+      setCurrentSlideIndex(currentSlideIndex-1);
+    }
+  }
+  const restartSlide=()=>{
+    setCurrentSlideIndex(0);
+  }
+  const currentSlide=slides[currentSlideIndex]
+    return (
+        <div>
+          
+            <div id="navigation" className="text-center">
+     
+                <button data-testid="button-restart"
+                onClick={restartSlide} disabled={currentSlideIndex===0}
+                 className="small outlined">Restart</button>
+                <button data-testid="button-prev" 
+                onClick={prev}
+                disabled={currentSlideIndex===0}
+                className="small">Prev</button>
+                <button data-testid="button-next" onClick={next} disabled={currentSlideIndex===slides.length-1} className="small">Next</button>
+            </div>
+            <div id="slide" className="card text-center">
+                <h1 data-testid="title">{currentSlide.title}</h1>
+                <p data-testid="text">{currentSlide.text}</p>
+            </div>
+        </div>
+    );
+
+}
+
+export default Slides;
