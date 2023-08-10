@@ -1,0 +1,67 @@
+'use strict';
+
+const fs = require('fs');
+const https = require('https');
+
+process.stdin.resume();
+process.stdin.setEncoding('utf-8');
+
+let inputString = '';
+let currentLine = 0;
+
+process.stdin.on('data', function(inputStdin) {
+    inputString += inputStdin;
+});
+
+process.stdin.on('end', function() {
+    inputString = inputString.split('\n');
+
+    main();
+});
+
+function readLine() {
+    return inputString[currentLine++];
+}
+
+
+async function getTeams(year, k) {
+    // write your code here
+    const baseUrl="https://jsonmock.hackerrank.com/api/football_matches";
+    let page=1;
+    let allTeams=[];
+    while(true){
+    
+    const url=`${baseUrl}?competition=UEFA%20Champions%20League&year=${year}&page=${page}`;
+    const response=await fetch(url);
+    const data=await response.json();
+    
+    const matches=data.data;
+    if(matches.length===0){
+        break;
+    }
+    allTeams.push(...matches.map(match.team1,match.team2));
+    if(page>=data.total_pages){
+        break;
+    }
+    page++;
+}
+const teamCount={};
+allTeams.forEach(team=>{
+    teamCount[team]=(teamCount[team]||0)+1;
+});
+   const resultTeams =Object.keys(teamCount).filter(team=>teamCount[team]>=k);
+    return resultTeams.sort();
+
+}
+async function main() {
+  const ws = fs.createWriteStream(process.env.OUTPUT_PATH);
+
+  const year = parseInt(readLine().trim());
+  const k = parseInt(readLine().trim());
+
+  const teams = await getTeams(year, k);
+
+  for (const team of teams) {
+    ws.write(`${team}\n`);
+  }
+}
